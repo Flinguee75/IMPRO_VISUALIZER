@@ -152,16 +152,40 @@ function AudioSphere({ uploadedFile }: AudioVisualizerProps) {
   }, [uploadedFile]);
 
   useFrame((state, delta) => {
+    // Si l'audio n'est pas encore chargé, on ne fait rien et on quitte la fonction.
     if (!audioLoaded) return;
+  
+    // On incrémente l'uniforme "u_time" avec le delta (le temps écoulé depuis la dernière frame).
+    // Cela permet d'animer le shader (par exemple, pour faire évoluer le bruit dans le vertex shader).
     uniforms.u_time.value += delta;
+  
+    // Si l'analyseur audio (AnalyserNode) est disponible, on récupère les données de fréquence.
     if (analyserRef.current) {
+      // On crée un tableau d'octets dont la taille correspond au nombre de bins de l'analyseur.
       const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+  
+      // Remplit dataArray avec les données de fréquence actuelles.
       analyserRef.current.getByteFrequencyData(dataArray);
+  
+      // Met à jour l'état "audioData" (pour un éventuel usage ou débogage) avec ces données.
       setAudioData(Array.from(dataArray));
+  
+      // Calcule la fréquence moyenne en additionnant toutes les valeurs du tableau et en divisant par le nombre d'éléments.
       const averageFrequency = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+  
+      // On met à jour l'uniforme "u_frequency" avec la valeur moyenne calculée.
+      // Cet uniforme est utilisé dans le vertex shader pour influencer la déformation de la géométrie en fonction du son.
       uniforms.u_frequency.value = averageFrequency;
     }
+  
+    // Ensuite, on fait tourner la sphère sur l'axe Y pour ajouter un effet de rotation.
+    if (meshRef.current) {
+      // On incrémente la rotation autour de l'axe Y proportionnellement au delta (temps écoulé) et à un facteur (ici 0.5).
+      // Cela permet d'obtenir une rotation fluide et indépendante du framerate.
+      meshRef.current.rotation.y += delta * 0.5;
+    }
   });
+  
 
   return (
     <mesh ref={meshRef}>
@@ -178,7 +202,7 @@ function AudioSphere({ uploadedFile }: AudioVisualizerProps) {
 
 export default function AudioVisualizer({ uploadedFile }: AudioVisualizerProps) {
   return (
-    <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
+    <Canvas camera={{ position: [0, 5, 0], fov: 75 }}>
       <ambientLight intensity={0.5} />
       <pointLight position={[10, 10, 10]} />
       <AudioSphere uploadedFile={uploadedFile} />
