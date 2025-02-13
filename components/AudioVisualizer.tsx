@@ -165,7 +165,7 @@ function AudioSphere({ uploadedFile }: AudioVisualizerProps) {
 
   return (
     <mesh ref={meshRef}>
-      <sphereGeometry args={[2.5, 64, 64]} />
+      <sphereGeometry args={[2.5, 100,100]} />
       <shaderMaterial
         uniforms={uniforms}
         vertexShader={vertexShader}
