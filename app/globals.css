@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 0, 0, 0;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(to bottom, transparent, rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+}
+
+.neon-text {
+  text-shadow: 0 0 5px theme("colors.neon.blue"), 0 0 10px theme("colors.neon.blue"), 0 0 20px theme("colors.neon.blue");
+}
+
+.neon-box {
+  box-shadow: 0 0 5px theme("colors.neon.blue"), 0 0 20px theme("colors.neon.blue");
+}
+
+@keyframes flicker {
+  0%,
+  19%,
+  21%,
+  23%,
+  25%,
+  54%,
+  56%,
+  100% {
+    opacity: 1;
+  }
+  20%,
+  22%,
+  24%,
+  55% {
+    opacity: 0.5;
+  }
+}
+
+.flicker {
+  animation: flicker 2s infinite alternate;
+}
+
